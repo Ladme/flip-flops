@@ -60,6 +60,11 @@ Options:
           
           [default: NaN]
 
+  -s, --step <STEP>
+          Analyze only every <STEP>th frame of the input trajectory.
+          
+          [default: 1]
+
       --transition <TRANSITION>
           Angle range that defines the transition zone between the upper and lower leaflets. Lipids whose orientation angle falls within this zone are treated as belonging to neither leaflet.
           

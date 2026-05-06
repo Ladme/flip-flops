@@ -79,6 +79,15 @@ pub struct Args {
     pub end: Option<f32>,
 
     #[arg(
+        short = 's',
+        long = "step",
+        help = "Analyze every <STEP>th frame",
+        long_help = "Analyze only every <STEP>th frame of the input trajectory.",
+        default_value_t = 1
+    )]
+    pub step: usize,
+
+    #[arg(
         long = "transition",
         value_parser = parse_transition,
         default_value = "55.0 125.0",

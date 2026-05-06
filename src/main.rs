@@ -189,11 +189,11 @@ fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .print_progress(ProgressPrinter::default());
 
     let reader = match (args.begin, args.end) {
-        (None, None) => reader.with_range(0.0, f32::MAX)?,
-        (Some(start), None) => reader.with_range(start, f32::MAX)?,
-        (None, Some(end)) => reader.with_range(0.0, end)?,
-        (Some(start), Some(end)) => reader.with_range(start, end)?,
-    };
+        (None, None) => reader.with_range(0.0, f32::MAX)?.with_step(args.step),
+        (Some(start), None) => reader.with_range(start, f32::MAX)?.with_step(args.step),
+        (None, Some(end)) => reader.with_range(0.0, end)?.with_step(args.step),
+        (Some(start), Some(end)) => reader.with_range(start, end)?.with_step(args.step),
+    }?;
 
     for frame in reader {
         let frame = frame?;
