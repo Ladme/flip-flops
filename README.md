@@ -27,14 +27,14 @@ A binary file named `flip-flops` will be built inside `target/release/`.
 ```
 Calculate number of flip-flop events.
 
-Usage: flip-flops [OPTIONS] --structure <STRUCTURE> --trajectory <TRAJECTORY> --tails <TAILS>
+Usage: flip-flops [OPTIONS] --structure <STRUCTURE> --tails <TAILS>
 
 Options:
   -s, --structure <STRUCTURE>
           Path to a gro, pdb, or tpr file containing the system structure.
 
-  -f, --trajectory <TRAJECTORY>
-          Path to the xtc file containing the trajectory to be analyzed.
+  -f, --trajectory <TRAJECTORIES>...
+          Path to the xtc file(s) containing the trajectory to be analyzed.
 
   -n, --index <INDEX>
           Path to an ndx file containing groups associated with the system.

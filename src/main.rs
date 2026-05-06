@@ -5,6 +5,7 @@ use std::{cmp::Ordering, process};
 
 use clap::Parser;
 use groan_rs::{
+    io::xtc_io::molly_xtc::GroupXtcReader,
     prelude::{ProgressPrinter, TrajMasterRead, Vector3D},
     system::System,
 };
@@ -175,7 +176,7 @@ fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     println!("Reading trajectory...");
     let reader = system
-        .group_xtc_iter(&args.trajectory, "FlipFlopsReserved-Relevant")?
+        .group_traj_cat_iter::<GroupXtcReader>(&args.trajectories, "FlipFlopsReserved-Relevant")?
         .print_progress(ProgressPrinter::default());
 
     let reader = match (args.begin, args.end) {

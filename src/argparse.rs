@@ -26,9 +26,10 @@ pub struct Args {
         short = 'f',
         long = "trajectory",
         help = "Input trajectory file",
-        long_help = "Path to the xtc file containing the trajectory to be analyzed."
+        long_help = "Path to the xtc file(s) containing the trajectory to be analyzed.",
+        num_args = 1..,
     )]
-    pub trajectory: String,
+    pub trajectories: Vec<String>,
 
     #[arg(
         short = 'n',
