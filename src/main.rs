@@ -1,7 +1,7 @@
 // Released under MIT License.
 // Copyright (c) 2026 Ladislav Bartos
 
-use std::{cmp::Ordering, process};
+use std::{cmp::Ordering, fs::File, io::Write, process};
 
 use clap::Parser;
 use groan_rs::{
@@ -102,7 +102,10 @@ fn assign_leaflets(lipids: &mut [Lipid], window: usize, transition: [f32; 2]) {
     }
 }
 
-fn detect_flipflops(lipids: &[Lipid]) -> (usize, usize) {
+fn detect_flipflops(
+    lipids: &[Lipid],
+    writer: &mut dyn Write,
+) -> Result<(usize, usize), std::io::Error> {
     let mut total_flipflops_down = 0;
     let mut total_flipflops_up = 0;
 
@@ -118,17 +121,19 @@ fn detect_flipflops(lipids: &[Lipid]) -> (usize, usize) {
                     if let Some(prev) = last {
                         match (prev, current) {
                             (Leaflet::UPPER, Leaflet::LOWER) => {
-                                println!(
+                                writeln!(
+                                    writer,
                                     "Lipid {} flipped from the UPPER to the LOWER leaflet in frame {}.",
                                     lipid.residue, frame
-                                );
+                                )?;
                                 lipid_flipflops_down += 1;
                             }
                             (Leaflet::LOWER, Leaflet::UPPER) => {
-                                println!(
+                                writeln!(
+                                    writer,
                                     "Lipid {} flipped from the LOWER to the UPPER leaflet in frame {}.",
                                     lipid.residue, frame
-                                );
+                                )?;
                                 lipid_flipflops_up += 1;
                             }
                             _ => (),
@@ -142,17 +147,21 @@ fn detect_flipflops(lipids: &[Lipid]) -> (usize, usize) {
 
         let lipid_flipflops = lipid_flipflops_down + lipid_flipflops_up;
         if lipid_flipflops > 0 {
-            println!("Lipid {}: {} flip-flops", lipid.residue, lipid_flipflops);
-            println!("  > UPPER->LOWER: {}", lipid_flipflops_down);
-            println!("  > LOWER->UPPER: {}", lipid_flipflops_up);
-            println!("\n");
+            writeln!(
+                writer,
+                "Lipid {}: {} flip-flops",
+                lipid.residue, lipid_flipflops
+            )?;
+            writeln!(writer, "  > UPPER->LOWER: {}", lipid_flipflops_down)?;
+            writeln!(writer, "  > LOWER->UPPER: {}", lipid_flipflops_up)?;
+            writeln!(writer, "\n")?;
         }
 
         total_flipflops_down += lipid_flipflops_down;
         total_flipflops_up += lipid_flipflops_up;
     }
 
-    (total_flipflops_down, total_flipflops_up)
+    Ok((total_flipflops_down, total_flipflops_up))
 }
 
 fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -194,15 +203,22 @@ fn run() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("Assigning lipids to leaflets...");
     assign_leaflets(&mut lipids, args.window, args.transition);
 
-    println!("Detecting flip-flops...");
-    let (flipflops_down, flipflops_up) = detect_flipflops(&lipids);
+    let mut writer: Box<dyn Write> = if let Some(output) = args.output {
+        Box::new(File::create(output)?)
+    } else {
+        Box::new(std::io::stdout())
+    };
 
-    println!(
+    println!("Detecting flip-flops...");
+    let (flipflops_down, flipflops_up) = detect_flipflops(&lipids, &mut writer)?;
+
+    writeln!(
+        writer,
         "\nTOTAL NUMBER OF FLIP-FLOPS: {}",
         flipflops_down + flipflops_up
-    );
-    println!("  > UPPER->LOWER: {}", flipflops_down);
-    println!("  > LOWER->UPPER: {}", flipflops_up);
+    )?;
+    writeln!(writer, "  > UPPER->LOWER: {}", flipflops_down)?;
+    writeln!(writer, "  > LOWER->UPPER: {}", flipflops_up)?;
 
     Ok(())
 }

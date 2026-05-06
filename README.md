@@ -39,6 +39,9 @@ Options:
   -n, --index <INDEX>
           Path to an ndx file containing groups associated with the system.
 
+  -o, --output <OUTPUT>
+          Path to an output file where the detected flip-flops are to be written. If not provided, the output is written to stdout.
+
       --heads <HEADS>
           Groan selection language query selecting atoms representing lipid heads. There should only be one selected atom per lipid molecule.
           

@@ -40,6 +40,14 @@ pub struct Args {
     pub index: Option<String>,
 
     #[arg(
+        short = 'o',
+        long = "output",
+        help = "Output file",
+        long_help = "Path to an output file where the detected flip-flops are to be written. If not provided, the output is written to stdout."
+    )]
+    pub output: Option<String>,
+
+    #[arg(
         long = "heads",
         default_value_t = String::from("name PO4 P"),
         help = "Selection of atoms representing lipid heads. Only one atom per lipid molecule!",
